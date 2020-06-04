@@ -66,7 +66,7 @@
             <ul>
               <li v-for="(item,index) in GoodList" >
                 <div class="pic">
-                  <a href="#"><img :src="'/static/'+item.productImg" alt=""></a>
+                  <a href="#"><img v-lazy="'/static/'+item.productImg" alt=""></a>
                 </div>
                 <div class="main">
                   <div class="name">{{ item.productName }}</div>
