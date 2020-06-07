@@ -10,12 +10,22 @@ var userSchema = mongoose.Schema(
         "productImage" :  String,
         "salePrice" :  String,
         "productName" :  String,
-        "productId" :  String,
-        "productNum" :  String,
+        "userId" :  String,
+        "productNum" :  Number,
         "checked" :  String
       }
     ],
-    "addressList":Array
+    "addressList":[
+      {
+        "addressId":String,
+        "userName":String,
+        "streetName":String,
+        "postCode":String,
+        "tel":String,
+        "isDefault": Boolean
+      }
+    ]
   }
 )
-module.exports = mongoose.model("user",userSchema)//暴露接口
+module.exports = mongoose.model("user",userSchema)//暴露接口user对应的是数据表名user
+

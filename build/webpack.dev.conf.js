@@ -10,10 +10,10 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
 
-const express = require('express')  //引入express框架
-const app = express()   //实例化express
-var good = express.Router() //创建后端路由
-app.use('/api',good)//创建api子路由
+// const express = require('express')  //引入express框架
+// const app = express()   //实例化express
+// var good = express.Router() //创建后端路由
+// app.use('/api',good)//创建api子路由
 
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
@@ -49,14 +49,14 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       poll: config.dev.poll,
     },
     //添加路由
-    before(app){
-      var appDate = require('../data/GoodList.json')//加载本地数据
-      app.get('/api/goods',(req,res)=>{  //以get的方式添加路由  req用于获取  res用于返回
-        res.json({
-          goodlist:appDate
-        })
-      })
-    }
+    // before(app){
+    //   var appDate = require('../data/GoodList.json')//加载本地数据
+    //   app.get('/api/goods',(req,res)=>{  //以get的方式添加路由  req用于获取  res用于返回
+    //     res.json({
+    //       goodlist:appDate
+    //     })
+    //   })
+    // }
   },
   plugins: [
     new webpack.DefinePlugin({
