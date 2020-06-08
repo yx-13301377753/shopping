@@ -130,7 +130,7 @@ router.get("/cartList",function (req,res,next) {
     var productId = req.body.productId;//传过来的商品id
     var productNum = req.body.productNum//传过来的商品数量
     var checked = req.body.checked//传过来的复选框的值
-    console.log(checked);
+    // console.log(checked);
     User.update(
       {'userId' : userId,'cartList.userId':productId},//查询的条件
       { 'cartList.$.productNum':productNum , 'cartList.$.checked':checked},//更新的内容
@@ -282,7 +282,7 @@ router.post("/addAddress",function (req,res,next) {
       })
     }else{
       if(doc){
-        console.log(doc.addressList);
+        // console.log(doc.addressList);
         doc.addressList.push(req.body)
         doc.save(function (err1,doc1) {
           if(err1){
@@ -360,6 +360,28 @@ router.post('/payMent',function (req,res,next) {
                 orderTotal:order.orderTotal
           }
           })
+          // var putArr = [];
+          // doc1.orderList.forEach(item=>{
+          //   item.goodsList.forEach(list=>{
+          //     putArr.push(list.userId)
+          //   })
+          // })
+          var productIdList=[];
+          doc.orderList.forEach(item=>{
+            if(item.orderId==order.orderId){
+              item.goodsList.forEach(item=>{
+                productIdList.push(item.userId)
+              })
+            }
+          });
+          productIdList= [...new Set(productIdList)];
+          productIdList.forEach(item=>{
+            console.log(item);
+            User.update({userId:userId},{$pull:{'cartList':{'userId':item}}},function (err,doc) {
+            })
+          });
+          // putArr = [... new Set(putArr)]  //最简单额数组去重
+          // console.log(putArr);
         }
       })
     }
@@ -388,7 +410,7 @@ router.get("/orderDetail",function (req,res,next) {
             //console.log(item.orderId);
           }
         })
-        console.log(orderTotal);
+        // console.log(orderTotal);
         if(orderTotal > 0){
           res.json({
             status:"0",
@@ -402,5 +424,37 @@ router.get("/orderDetail",function (req,res,next) {
       }
     }
   })
+})
+//购物车数量
+router.get("/getCartCount",function (req,res,next) {
+  if(req.cookies.userId){
+    var userId = req.cookies.userId
+    User.findOne({userId : userId},function (err,doc) {
+      if(err){
+        res.json({
+          status:"1",
+          msg : err.message,
+          result : ''
+        })
+      }else{
+        var cartList = doc.cartList;  //拿到购物车
+        var cartCount = 0  //初始化购物车数量
+        cartList.forEach(item=>{
+          cartCount+=item.productNum
+        })
+        res.json({
+            status:"0",
+            msg : "",
+            result:cartCount
+        })
+      }
+    })
+  }else{
+    res.json({
+      status:"1",
+      msg : "当前用户没登录",
+      result : ''
+    })
+  }
 })
 module.exports = router;

@@ -22,7 +22,7 @@
           <a href="javascript:void(0)" class="navbar-link" @click="loginModelFlag='true'" v-if="!nickname">Login</a>
           <a href="javascript:void(0)" class="navbar-link" @click="Logout">Logout</a>
           <div class="navbar-cart-container">
-            <span class="navbar-cart-count"></span>
+            <span class="navbar-cart-count" v-if=" cartCount > 0">{{ cartCount }}</span>
             <a class="navbar-link navbar-cart-link" href="/#/cart">
               <svg class="navbar-cart-logo">
                 <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-cart"></use>
@@ -83,18 +83,30 @@ export default {
   computed : {  //替换掉data中的nickname，取代的是一个计算属性,现在不行，因为$store.state.nickname并没有赋值
     nickname () {
         return this.$store.state.nickname
-      }
+      },
+    cartCount(){
+      return this.$store.state.cartCount
+    }
   },
   mounted() {  //声明周期
       this.checkLogin()  //调用一个方法，检测用户是否登录
+      this.getCartCount()
   },
   methods:{
+      //购物车的数量
+      getCartCount(){
+        axios.get("/users/getCartCount").then(res=>{
+          console.log(res.data.result);
+          this.$store.commit("initCartCount",res.data.result)
+        })
+      },
       //检测登录的方法
       checkLogin(){
         axios.get("users/checkLogin").then((res)=>{
           if(res.data.status == '0'){//说明登录成功
             //this.nickname = res.data.result;  //data中的nickname的值已经被删掉了，所以不能用
             this.$store.commit('updateUserInfo',res.data.result)
+            this.getCartCount() //检测登录，如果登录了，需要知道购物车数量
           }
         })
       },
@@ -102,7 +114,13 @@ export default {
     Logout(){
         axios.post("/users/logout").then((res)=>{
           if(res.data.status == '0'){//成功   1:不成功
-            this.nickname = ''
+            this.$store.commit('updateUserInfo','')
+            this.$store.commit("initCartCount",'')
+            if(this.$store.state.page != 0){
+              this.$router.push({
+                path :'/'
+              })
+            }
           }
         })
     },
@@ -120,7 +138,9 @@ export default {
         if(res.status == '0'){
           this.errorTip = false;
           this.loginModelFlag = false
-          this.nickname = res.result.userName;
+          //this.nickname = res.result.userName;
+          this.$store.commit('updateUserInfo',res.result.userName)
+          this.getCartCount()//登录完成后调用
         }else{
           this.errorTip = true;
         }

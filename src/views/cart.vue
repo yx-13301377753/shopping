@@ -96,7 +96,7 @@
                 </div>
                 <div class="cart-tab-5">
                   <div class="cart-item-opration">
-                    <a href="javascript:;" class="item-edit-btn" @click="modalShow(item.userId)">
+                    <a href="javascript:;" class="item-edit-btn" @click="modalShow(item)">
                       <svg class="icon icon-del">
                         <use xlink:href="#icon-del"></use>
                       </svg>
@@ -181,6 +181,7 @@
   export default{
     data(){
       return{
+        delItem : '',
         //checkAllFlag : false,//全选按钮的状态//关闭这个状态，修改为计算属性的方法，进行累计
         cartList : [],//请求回来的数据
         mdShowCart : false,
@@ -256,16 +257,23 @@
           checked : item.checked
         }).then((res)=>{
           console.log(res.data);
+          var num = 0;
+          flag == 'add'? num = 1 : num = -1;
+          this.$store.commit("updateCartCount",num)
         })
       },
       init(){
         axios.get("/users/cartList").then((res)=>{
            this.cartList = res.data.result
+          this.$store.commit('updatePage','cart')
         })
       },
-      modalShow (productId) {
+      modalShow (item) {
+         // console.log(item);
+        this.delItem = item.productNum
         this.mdShowCart = true
-        this.productId = productId
+        this.productId = item.userId
+        // console.log(this.productId);
       },
       closes(){
         this.mdShowCart = false;
@@ -276,6 +284,7 @@
           console.log(res.data);
           if(res.data.status == '0'){
               this.mdShowCart = false;
+              this.$store.commit('updateCartCount',-this.delItem)
               this.init()
             }
         })

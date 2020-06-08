@@ -133,8 +133,13 @@ export default {
     addCart(productId){
       axios.post('/goods/addCart',{productId:productId}).then((res)=>{
         //alert(res.data.status == '0'?"商品添加成功":"商品添加失败")
-        res.data.status == '0' ? this.mdShowCart=true : this.mdShow=true;
-
+        // res.data.status == '0' ? this.mdShowCart=true : this.mdShow=true;
+        if(res.data.status == '0'){
+          this.mdShowCart=true;
+          this.$store.commit("updateCartCount",1)
+        }else{
+          this.mdShow=true;
+        }
       })
     },
     //price升降序的方法
@@ -152,6 +157,7 @@ export default {
     },
 
     getGoodList (flag) {//1)初始化flag为undefined，向下滑动时候，falg就变成true
+      this.$store.commit('updatePage','')
       this.loading = true;//当请求时显示loading图片
       var args = {
         priceLive : this.priceState_all,//active || 1,2,3,4,...告知后台你要查询的级别是什么？

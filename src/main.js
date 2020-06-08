@@ -11,7 +11,8 @@ Vue.use(Vuex)//使用vuex
 const store = new Vuex.Store({//实例化vuex
   state : {
     nickname : '',//登录名
-    cartCount : 0//购物车数量
+    cartCount : 0,//购物车数量
+    page : ''
   },
   mutations:{  //更改state的状态
     updateUserInfo(state,nickname){  //把state传递的值，修改state中的nickname--登录的名称
@@ -19,6 +20,12 @@ const store = new Vuex.Store({//实例化vuex
     },
     updateCartCount(state,cartCount){  //把state传递的值，修改state中的cartCount--购物车数量
       state.cartCount += cartCount  //传递过来的数量进行加,减
+    },
+    initCartCount(state,cartCount){
+      state.cartCount = cartCount
+    },
+    updatePage (state,page) {
+      state.page = page
     }
   }
 })
